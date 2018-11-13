@@ -1,7 +1,6 @@
 # Poor humans cloud homelab
 
 ## Hardware
-------------
 Raspberry Pi (2 and/or 3)
 
 ## Wishlist
