@@ -1,0 +1,36 @@
+---
+- name: Update system
+  apt:
+    upgrade: dist
+
+- name: Install needed packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - software-properties-common
+
+# it's stupid to fetch a key via curl, but Docker doesn't seem to care to
+# upload their keys to proper keyservers
+- name: Add Docker Key
+  shell:
+    curl -fsSL https://download.docker.com/linux/raspbian/gpg | apt-key add -qq
+
+- name: Determine Raspbian release
+  shell:
+    lsb_release -cs
+  register: raspbian_release
+
+- name: Add docker repos
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/raspbian {{ raspbian_release.stdout }} edge"
+    state: present
+
+- name: Install Docker
+  apt:
+    name: docker-ce
+    install_recommends: no
+    update_cache: yes
+
