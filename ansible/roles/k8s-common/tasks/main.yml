@@ -17,6 +17,8 @@
 - name: Add Docker Key
   shell:
     curl -fsSL https://download.docker.com/linux/raspbian/gpg | apt-key add -qq
+  args:
+    warn: no
 
 - name: Determine Raspbian release
   shell:
@@ -34,3 +36,45 @@
     install_recommends: no
     update_cache: yes
 
+- name: Disable dphys-swapfile
+  shell:
+      dphys-swapfile swapoff && dphys-swapfile uninstall
+  args:
+    removes: /var/swap
+
+- name: Disable dphys-swapfile service
+  service:
+    name: dphys-swapfile
+    state: stopped
+    enabled: no
+
+- name: Enable cgroup settings
+  lineinfile:
+    dest=/boot/cmdline.txt
+    backrefs=yes
+    state=present
+    regexp='(.*rootwait)$'
+    line='\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+  register: cgroups_changed
+
+- name: Reboot the lab hosts
+  reboot:
+    reboot_timeout: 3600
+  when: cgroups_changed.changed
+
+- name: Add k8s repo key
+  shell:
+      curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -qq
+  args:
+    warn: no
+
+- name: add k8s repo
+  apt_repository:
+    repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+    state: present
+
+- name: Install kubeadm
+  apt:
+    name: kubeadm
+    state: present
+    update_cache: yes
