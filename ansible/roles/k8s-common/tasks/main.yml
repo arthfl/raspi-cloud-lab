@@ -75,6 +75,9 @@
 
 - name: Install kubeadm
   apt:
-    name: kubeadm
+    name: "{{ item }}"
     state: present
     update_cache: yes
+  loop:
+    - kubeadm
+    - kubectl
