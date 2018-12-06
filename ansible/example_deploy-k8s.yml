@@ -1,0 +1,12 @@
+---
+- name: Deploy Kubernetes
+  hosts: all
+  remote_user: someuser
+  become: yes
+  vars:
+    kubeconf_destination: /home/youruser/.kube/raspikube.conf
+  roles:
+    - raspi-common
+    - k8s-common
+    - k8s-master
+    - k8s-node
