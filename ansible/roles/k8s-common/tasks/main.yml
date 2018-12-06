@@ -1,7 +1,7 @@
 ---
 - name: Update system
   apt:
-    upgrade: dist
+    upgrade: yes
 
 - name: Install needed packages
   package:
@@ -32,9 +32,15 @@
 
 - name: Install Docker
   apt:
-    name: docker-ce=18.06.0~ce~3-0~raspbian
+    name: docker-ce=18.06.1~ce~3-0~raspbian
     install_recommends: no
+    autoremove: yes
     update_cache: yes
+
+- name: Prevent docker from being upgraded
+  dpkg_selections:
+    name: docker-ce
+    selection: hold
 
 - name: Disable dphys-swapfile
   shell:
