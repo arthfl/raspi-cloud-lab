@@ -1,0 +1,7 @@
+---
+- name: Join node to k8s cluster
+  shell:
+      "{{ hostvars[groups['master'][0]]['k8s_join_command'].stdout }}"
+  args:
+    creates: /etc/kubernetes/kubelet.conf
+  when: "'nodes' in group_names"

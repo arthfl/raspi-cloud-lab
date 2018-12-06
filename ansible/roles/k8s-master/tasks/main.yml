@@ -1,0 +1,26 @@
+---
+- name: Initialize master (this may take a while)
+  shell:
+      "kubeadm init --token-ttl=0 --pod-network-cidr=10.224.0.0/16 --apiserver-advertise-address={{ ansible_default_ipv4.address }}"
+  args:
+    creates: /etc/kubernetes/admin.conf
+  when: "'master' in group_names"
+
+- name: Copy kubeconfig from master to localhost
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ kubeconf_destination }}"
+    flat: yes
+  when: "'master' in group_names"
+
+# dirty hack for now
+- name: Enable flannel
+  shell:
+    "KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml"
+  when: "'master' in group_names"
+
+- name: Retrieve join command
+  shell:
+    "kubeadm token create --print-join-command"
+  register: k8s_join_command
+  when: "'master' in group_names"
