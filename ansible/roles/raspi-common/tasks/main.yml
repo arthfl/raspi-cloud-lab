@@ -1,0 +1,5 @@
+---
+- name: Disable annoying auto-updates
+  apt:
+      name: unattended-upgrades
+      state: absent
