@@ -9,3 +9,6 @@ Raspberry Pi (2 and/or 3)
 * Deploy and run k8s on raspi cluster
 * Deploy bosh director so you can deploy bosh releases (maybe CF craziness in the
   future
+
+## Known issues
+* Not everything is as idempotent as i'd like it to be yet
