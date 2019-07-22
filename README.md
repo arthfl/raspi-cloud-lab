@@ -1,14 +1,19 @@
-# Poor humans cloud homelab
+# Poor humans home lab
+
+This repo  provides various means of automation to manage a given set of Raspberry 
+Pis in a nice way.
+The idea behind this is, to give you more time to do the interesting things in your lab.
+
+Most of the automation that's happening on the remote hosts, is done via Ansible.
+Local convenience scripts will mostly be done with Bash.
+
+## Structure
+* [ansible](ansible/) - Ansible playbooks and roles
+* [scripts](scripts/) - Convenience scripts to be run locally
 
 ## Hardware
 Raspberry Pi (2 and/or 3)
 
-## Wishlist
-* Have a "reset" thing, that sets the lab back to some kind of factory default
-    * kinda wonkily working with the reset-lab playbook
-* Deploy and run k8s on raspi cluster
-* Deploy bosh director so you can deploy bosh releases (maybe CF craziness in the
-  future
-
-## Known issues
-* Not everything is as idempotent as i'd like it to be yet
+### Known limitations
+* For a K8S master node, you'll need at least a Raspi 3. The v2 doesn't seem to have
+enough bang.
