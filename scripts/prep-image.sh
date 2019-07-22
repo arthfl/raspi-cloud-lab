@@ -1,12 +1,50 @@
 #!/usr/bin/env bash
 set -eu
 
-zipped_image="$1"
-group_name="flart"
-user_name="flart"
+ARGS=$(getopt -o 'h' --longoptions 'help,archive:,hostname:,group:,user:' -- "$@")
+if [[ $? -ne 0 ]]; then
+    echo "NOPE"
+    exit 1
+fi
 
-echo "Unzipping image $zipped_image..."
-unzip "$zipped_image"
+eval set -- "$ARGS"
+unset ARGS
+while true; do
+    case "$1" in
+        '-h'|'--help')
+            printf "Usage: %s --archive something.zip --hostname foo --group bar --user bar\n" "$0"
+            exit 1
+            ;;
+        '--archive')
+            archive="$2"
+            shift 2
+            continue
+            ;;
+        '--hostname')
+            hostname="$2"
+            shift 2
+            continue
+            ;;
+        '--group')
+            group="$2"
+            shift 2
+            continue
+            ;;
+        '--user')
+            user="$2"
+            shift 2
+            continue
+            ;;
+        '--')
+            shift
+            break
+            ;;
+    esac
+    shift
+done
+
+echo "Unzipping image $archive..."
+unzip "$archive"
 echo "done"
 
 echo -n "Getting name of image file... "
@@ -38,12 +76,16 @@ echo -n "Mounting image partition 2... "
 sudo mount "${loopback_device}p2" "$temp_dir"
 echo "done"
 
-echo -n "Adding group $group_name..."
-sudo groupadd -P "$temp_dir" "$group_name"
+echo -n "Adding group $group..."
+sudo groupadd -P "$temp_dir" "$group"
 echo "done"
 
-echo -n "Adding user $user_name..."
-sudo useradd -P "$temp_dir" -g "$group_name" -G adm -s /bin/bash "$user_name"
+echo -n "Adding user $user..."
+sudo useradd -P "$temp_dir" -g "$group" -G adm -s /bin/bash "$user"
+echo "done"
+
+echo -n "Setting hostname $hostname..."
+echo "$hostname" | sudo tee "${temp_dir}/etc/hostname" > /dev/null
 echo "done"
 
 echo -n "Unmounting image partition 2... "
