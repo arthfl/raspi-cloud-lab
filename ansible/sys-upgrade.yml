@@ -1,0 +1,7 @@
+---
+- name: Upgrade packages on all hosts
+  hosts: all
+  remote_user: flart
+  become: yes
+  roles:
+    - sys-upgrade
