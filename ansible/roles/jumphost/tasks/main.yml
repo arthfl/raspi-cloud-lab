@@ -1,0 +1,30 @@
+---
+- name: Install needed packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - dnsmasq
+    - tcpdump
+
+- name: Configure eth0 to static address
+  template:
+      src: eth0.j2
+      dest: /etc/network/interfaces.d/eth0
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: Configure dnsmasq
+  template:
+      src: dnsmasq.conf.j2
+      dest: /etc/dnsmasq.conf
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: Enable and restart isc-dhcpd
+  service:
+      name: dnsmasq
+      enabled: yes
+      state: restarted

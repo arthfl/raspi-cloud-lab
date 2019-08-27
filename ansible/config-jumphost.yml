@@ -1,0 +1,9 @@
+---
+- name: Config jumphost
+  hosts: all
+  remote_user: flart
+  become: yes
+  roles:
+    - raspi-common
+    - jumphost
+    - wireguard
